@@ -58,7 +58,7 @@ class RepeatNote extends NoteHandlerPlugin
                     'verb' => 'repeat',
                     'object_type' => 'note',
                     'object_id' => $note->getId()
-                ], order_by: ['created' => 'dsc'])[0];
+                ], order_by: ['created' => 'desc'])[0];
         }
 
         // Create a new note with the same content as the original
@@ -340,5 +340,14 @@ class RepeatNote extends NoteHandlerPlugin
     public function onNewActivityPubActivityWithObject(Actor $actor, \ActivityPhp\Type\AbstractObject $type_activity, mixed $type_object, ?\Plugin\ActivityPub\Entity\ActivitypubActivity &$ap_act): bool
     {
         return $this->activitypub_handler($actor, $type_activity, $type_object, $ap_act);
+    }
+
+    public function onGSVerbToActivityStreamsTwoActivityType(string $verb, ?string &$gs_verb_to_activity_stream_two_verb): bool
+    {
+        if ($verb === 'repeat') {
+            $gs_verb_to_activity_stream_two_verb = 'Announce';
+            return Event::stop;
+        }
+        return Event::next;
     }
 }
